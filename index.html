@@ -4,410 +4,681 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Whirling Atlas — Sufi Paths Through Time</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --lapis: #1a4d7a;
-      --lapis-dark: #0d2840;
-      --gold: #d4a843;
-      --gold-light: #f4d878;
-      --turquoise: #40c4c4;
-      --sand: #c9b896;
-      --night: #0a0f1a;
+      --gold: #c9a84c;
+      --gold-light: #e8d5a3;
+      --gold-dim: #8a6f2f;
+      --burgundy: #6b1d2a;
+      --burgundy-deep: #3d0f18;
+      --cream: #f5ead6;
+      --cream-dim: #d4c4a8;
+      --night: #1a0e1e;
+      --night-mid: #2a1a30;
+      --wine: #4a1528;
+      --rose-dust: #c4837a;
+      --teal-sufi: #3d8b8b;
     }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      background: 
-        radial-gradient(ellipse at 50% 0%, var(--lapis) 0%, transparent 60%),
-        radial-gradient(ellipse at 80% 20%, rgba(212,168,67,0.15) 0%, transparent 40%),
-        radial-gradient(ellipse at 20% 80%, rgba(64,196,196,0.1) 0%, transparent 50%),
-        linear-gradient(180deg, var(--night) 0%, var(--lapis-dark) 100%);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      background: var(--night);
+      color: var(--cream);
       min-height: 100vh;
-      font-family: 'Cinzel', serif;
+      overflow-x: hidden;
     }
-    .arabic { font-family: 'Noto Naskh Arabic', serif; }
-    
-    /* Geometric pattern overlay */
-    .pattern-overlay {
-      background-image: 
-        repeating-linear-gradient(30deg, transparent, transparent 10px, rgba(212,168,67,0.03) 10px, rgba(212,168,67,0.03) 20px),
-        repeating-linear-gradient(-30deg, transparent, transparent 10px, rgba(212,168,67,0.03) 10px, rgba(212,168,67,0.03) 20px);
-      pointer-events: none;
+
+    /* Geometric background pattern */
+    body::before {
+      content: '';
       position: fixed;
       inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(107,29,42,0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(61,139,139,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%);
+      pointer-events: none;
       z-index: 0;
     }
-    
-    #map { 
-      height: 22rem; 
-      border-radius: 1.5rem;
-      border: 2px solid rgba(212,168,67,0.3);
-      box-shadow: 0 0 40px rgba(64,196,196,0.15), inset 0 0 60px rgba(10,15,26,0.5);
+
+    main { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(201,168,76,0.2);
     }
-    .leaflet-container { background: var(--night); }
-    .leaflet-popup-content-wrapper {
-      background: linear-gradient(135deg, var(--lapis-dark), var(--night));
-      border: 1px solid var(--gold);
-      border-radius: 1rem;
+    .header .subtitle {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .header h1 {
+      font-size: clamp(2.2rem, 6vw, 3.5rem);
+      font-weight: 700;
+      color: var(--cream);
+      margin: 0.5rem 0 0.75rem;
+      line-height: 1.1;
+    }
+    .header .tagline {
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--cream-dim);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Whirling ornament */
+    .whirl-ornament {
+      width: 48px; height: 48px;
+      margin: 1rem auto 0;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      position: relative;
+      opacity: 0.5;
+    }
+    .whirl-ornament::after {
+      content: '۞';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--gold);
+      animation: whirl 12s linear infinite;
+    }
+    @keyframes whirl { to { transform: rotate(360deg); } }
+
+    /* Metrics */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .metric-card {
+      background: rgba(42,26,48,0.6);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .metric-card .label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+    }
+    .metric-card .value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 0.25rem;
       color: var(--gold-light);
     }
-    .leaflet-popup-tip { background: var(--lapis-dark); }
-    
-    .century-dot {
-      width: 16px; height: 16px; border-radius: 9999px;
-      border: 2px solid var(--gold);
-      background: var(--lapis-dark);
-      transition: all 0.3s ease;
+    .metric-card .value.route { color: var(--rose-dust); }
+
+    /* Map section */
+    .map-section {
+      background: rgba(42,26,48,0.5);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
     }
-    .century-dot.active {
-      background: var(--turquoise);
-      border-color: var(--gold-light);
-      box-shadow: 0 0 20px rgba(64,196,196,0.6), 0 0 40px rgba(212,168,67,0.3);
-      transform: scale(1.2);
+    #map {
+      height: 22rem;
+      border-radius: 12px;
+      border: 1px solid rgba(201,168,76,0.1);
     }
-    
-    .card {
-      background: linear-gradient(135deg, rgba(13,40,64,0.8), rgba(10,15,26,0.9));
-      border: 1px solid rgba(212,168,67,0.2);
-      border-radius: 1.5rem;
-      backdrop-filter: blur(10px);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .leaflet-container { background: #1a0e1e !important; }
+    .leaflet-popup-content-wrapper {
+      background: var(--night-mid) !important;
+      color: var(--cream) !important;
+      border: 1px solid rgba(201,168,76,0.25);
+      border-radius: 10px !important;
+      font-family: 'Cormorant Garamond', serif;
     }
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(64,196,196,0.15);
-    }
-    
-    .btn {
-      padding: 0.75rem 1.5rem;
-      border-radius: 2rem;
+    .leaflet-popup-tip { background: var(--night-mid) !important; }
+
+    /* Timeline */
+    .timeline-area { margin-top: 1.25rem; }
+    .timeline-label {
+      font-size: 0.85rem;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 0.75rem;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      border: none;
-    }
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold), var(--gold-light));
-      color: var(--lapis-dark);
-      box-shadow: 0 4px 20px rgba(212,168,67,0.3);
-    }
-    .btn-gold:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 30px rgba(212,168,67,0.5);
-    }
-    .btn-gold.active {
-      background: linear-gradient(135deg, var(--turquoise), #60e0e0);
-      box-shadow: 0 4px 20px rgba(64,196,196,0.4);
-    }
-    .btn-outline {
-      background: transparent;
-      border: 2px solid var(--gold);
       color: var(--gold);
+      margin-bottom: 0.5rem;
     }
-    .btn-outline:hover {
-      background: rgba(212,168,67,0.1);
-      transform: translateY(-2px);
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(to right, var(--burgundy), var(--gold), var(--teal-sufi));
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
     }
-    
-    .whirl-animation {
-      animation: whirl 20s linear infinite;
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 3px solid var(--night);
+      box-shadow: 0 0 12px rgba(201,168,76,0.4);
+      cursor: pointer;
     }
-    @keyframes whirl {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+    input[type="range"]::-moz-range-thumb {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 3px solid var(--night);
+      box-shadow: 0 0 12px rgba(201,168,76,0.4);
+      cursor: pointer;
     }
-    
-    .glow-text {
-      text-shadow: 0 0 20px rgba(212,168,67,0.5), 0 0 40px rgba(212,168,67,0.3);
+
+    /* Century dots */
+    .century-dots {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.75rem;
+      padding: 0 2px;
     }
-    
+    .c-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: rgba(201,168,76,0.15);
+      border: 1.5px solid rgba(201,168,76,0.3);
+      transition: all 0.4s ease;
+    }
+    .c-dot.active {
+      background: var(--gold);
+      border-color: var(--gold-light);
+      box-shadow: 0 0 10px rgba(201,168,76,0.5);
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border-radius: 24px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 1px solid;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-sound {
+      background: rgba(61,139,139,0.15);
+      border-color: var(--teal-sufi);
+      color: #7fc4c4;
+    }
+    .btn-sound:hover, .btn-sound.on { background: rgba(61,139,139,0.35); }
+    .btn-sound.on { box-shadow: 0 0 14px rgba(61,139,139,0.3); }
+    .btn-whirl {
+      background: rgba(107,29,42,0.2);
+      border-color: var(--burgundy);
+      color: var(--rose-dust);
+    }
+    .btn-whirl:hover, .btn-whirl.on { background: rgba(107,29,42,0.4); }
+
+    /* Panels */
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .panel {
+      background: rgba(42,26,48,0.5);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+    .panel h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+    .panel p { font-size: 0.95rem; line-height: 1.65; color: var(--cream-dim); }
+    .panel .quote-text {
+      font-style: italic;
+      color: var(--cream);
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+    .panel .quote-author {
+      font-size: 0.8rem;
+      color: var(--gold-dim);
+      margin-top: 0.75rem;
+    }
+    .panel .arabic-text {
+      font-family: 'Noto Naskh Arabic', serif;
+      direction: rtl;
+      font-size: 0.95rem;
+      color: var(--gold);
+      margin-top: 0.5rem;
+    }
+
+    /* Centers list */
+    .centers-section {
+      background: rgba(42,26,48,0.5);
+      border: 1px solid rgba(201,168,76,0.12);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+    .centers-section h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+    }
+    .center-list { list-style: none; display: grid; gap: 0.5rem; }
+    .center-item {
+      background: rgba(26,14,30,0.6);
+      border: 1px solid rgba(201,168,76,0.1);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      transition: border-color 0.3s;
+    }
+    .center-item:hover { border-color: rgba(201,168,76,0.3); }
+    .center-name { font-weight: 700; color: var(--gold-light); }
+    .center-order { color: var(--rose-dust); font-size: 0.9rem; }
+    .center-detail { color: var(--cream-dim); font-size: 0.85rem; margin-top: 0.25rem; }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: rgba(212,196,168,0.35);
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(201,168,76,0.08);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .metrics { grid-template-columns: 1fr; gap: 0.5rem; }
+      .panels { grid-template-columns: 1fr; }
+      #map { height: 16rem; }
+      .metric-card { text-align: left; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center; }
+      .metric-card .label { margin: 0; }
+      .metric-card .value { margin: 0; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
-      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      * { animation: none !important; transition: none !important; }
     }
   </style>
 </head>
-<body class="text-slate-100">
-  <div class="pattern-overlay"></div>
-  
-  <main class="relative z-10 max-w-6xl mx-auto px-4 py-8 md:py-12">
-    <header class="text-center mb-10">
-      <div class="inline-block mb-4">
-        <span class="text-[#d4a843] tracking-[0.3em] uppercase text-xs font-semibold" style="text-shadow: 0 0 10px rgba(212,168,67,0.5);">Nightly Build • Paths of Light</span>
-      </div>
-      <h1 class="text-4xl md:text-6xl font-black glow-text" style="font-family: 'Cinzel', serif;">Whirling Atlas</h1>
-      <p class="text-slate-300 mt-4 max-w-3xl mx-auto text-lg leading-relaxed" style="font-family: 'Cinzel', serif;">
-        Journey through centuries of Sufi wisdom. Drag the timeline below and watch sacred centers illuminate as mystic paths travel across lands.
-      </p>
-      <p class="text-[#40c4c4] mt-2 text-sm arabic" dir="rtl">الطرق الصوفية عبر الزمان</p>
+<body>
+  <main>
+    <header class="header">
+      <p class="subtitle">Nightly Build · Paths of Light</p>
+      <h1>Whirling Atlas</h1>
+      <p class="arabic-text" dir="rtl" style="color: var(--teal-sufi); font-size: 1.1rem; margin: 0.4rem 0;">الطرق الصوفية عبر الزمان</p>
+      <p class="tagline">A journey across Sufi centers from the 10th to the 20th century — drag the timeline and watch poems, routes, and cities breathe as ideas travel.</p>
+      <p class="arabic-text" style="color: var(--teal-sufi); font-size: 0.85rem; margin-top: 0.3rem;">الحب هو الجسر — Love is the bridge</p>
+      <div class="whirl-ornament"></div>
     </header>
 
-    <section class="grid gap-4 md:grid-cols-3 mb-8" aria-label="Live metrics">
-      <article class="card p-5 text-center">
-        <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-2">Era</p>
-        <p id="eraLabel" class="text-2xl font-bold text-[#40c4c4]" style="text-shadow: 0 0 15px rgba(64,196,196,0.4);">10th Century</p>
-      </article>
-      <article class="card p-5 text-center">
-        <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-2">Active Centers</p>
-        <p id="activeCenters" class="text-2xl font-bold text-[#d4a843]" style="text-shadow: 0 0 15px rgba(212,168,67,0.4);">0</p>
-      </article>
-      <article class="card p-5 text-center">
-        <p class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-2">Current</p>
-        <p id="routeLabel" class="text-lg font-bold text-[#f4d878]">Loading…</p>
-      </article>
+    <section class="metrics" aria-label="Live metrics">
+      <div class="metric-card">
+        <span class="label">Timeline</span>
+        <span class="value" id="eraLabel">10th Century</span>
+      </div>
+      <div class="metric-card">
+        <span class="label">Active Centers</span>
+        <span class="value" id="activeCenters">0</span>
+      </div>
+      <div class="metric-card">
+        <span class="label">Main Current</span>
+        <span class="value route" id="routeLabel">Loading…</span>
+      </div>
     </section>
 
-    <section class="card p-5 md:p-8 mb-8" aria-label="Map and timeline">
+    <section class="map-section" aria-label="Map and timeline">
       <div id="map" role="application" aria-label="Interactive map of Sufi centers"></div>
 
-      <div class="mt-8">
-        <label for="timeline" class="text-sm font-semibold text-[#d4a843] tracking-wide">Century Scrubber</label>
-        <input id="timeline" type="range" min="10" max="20" value="10" step="1" 
-          class="w-full mt-3 h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[#d4a843]"
-          style="background: linear-gradient(90deg, var(--gold) 0%, var(--lapis) 100%);"
-          aria-describedby="timelineHelp" />
-        <p id="timelineHelp" class="text-xs text-slate-400 mt-2 italic">Journey from 10th to 20th century. Each shift awakens the map.</p>
+      <div class="timeline-area">
+        <div class="timeline-label">Century Scrubber</div>
+        <input id="timeline" type="range" min="10" max="20" value="10" step="1" aria-label="Select century from 10th to 20th" />
+        <div class="century-dots" id="centuryDots" aria-hidden="true"></div>
 
-        <div id="centuryDots" class="flex justify-between mt-4 px-2" aria-hidden="true"></div>
-
-        <div class="mt-6 flex flex-wrap gap-3 justify-center">
-          <button id="soundBtn" class="btn btn-outline">
-            <span class="sound-icon">🎵</span> <span class="sound-text">Enable sonic pulse</span>
-          </button>
-          <button id="jumpBtn" class="btn btn-gold">Auto-whirl through centuries</button>
+        <div class="btn-row">
+          <button id="soundBtn" class="btn btn-sound" aria-pressed="false">☽ Sonic Pulse</button>
+          <button id="jumpBtn" class="btn btn-whirl" aria-pressed="false">۞ Auto-Whirl</button>
         </div>
       </div>
     </section>
 
-    <section class="grid md:grid-cols-2 gap-5 mb-8" aria-label="Data driven panels">
-      <article class="card p-6">
-        <h2 class="font-bold text-xl text-[#d4a843] mb-3" style="text-shadow: 0 0 10px rgba(212,168,67,0.3);">Century Note</h2>
-        <p id="centuryStory" class="text-slate-200 leading-relaxed" style="font-family: 'Cinzel', serif;">Loading story…</p>
-      </article>
-      <article class="card p-6">
-        <h2 class="font-bold text-xl text-[#40c4c4] mb-3" style="text-shadow: 0 0 10px rgba(64,196,196,0.3);">Poetic Signal</h2>
-        <p id="quoteText" class="text-[#f4d878] italic text-lg leading-relaxed" style="font-family: 'Cinzel', serif;">"..."</p>
-        <p id="quoteMeta" class="text-xs text-slate-400 mt-3 uppercase tracking-widest"></p>
-      </article>
+    <section class="panels" aria-label="Information panels">
+      <div class="panel">
+        <h2>Century Note</h2>
+        <p id="centuryStory">Loading…</p>
+      </div>
+      <div class="panel">
+        <h2>Poetic Signal</h2>
+        <p class="quote-text" id="quoteText">"…"</p>
+        <p class="arabic-text" id="quoteArabic"></p>
+        <p class="quote-author" id="quoteMeta"></p>
+      </div>
     </section>
 
-    <section class="card p-6 mb-8">
-      <h2 class="font-bold text-xl text-[#d4a843] mb-4" style="text-shadow: 0 0 10px rgba(212,168,67,0.3);">Visible Centers This Century</h2>
-      <ul id="centerList" class="grid gap-3 text-sm"></ul>
+    <section class="centers-section">
+      <h2>Visible Centers This Century</h2>
+      <ul class="center-list" id="centerList"></ul>
     </section>
 
-    <footer class="text-center text-xs text-slate-500 mt-10 mb-8">
-      <p class="mb-2">Built for learning surprise</p>
-      <p class="italic">Data is simplified historical storytelling, not exhaustive scholarship.</p>
-      <p class="mt-3 text-[#40c4c4] arabic text-xs">الحب هو الجسر — Love is the bridge</p>
+    <footer class="footer">
+      Built for learning surprise · Data is simplified historical storytelling, not exhaustive scholarship.
     </footer>
   </main>
 
   <script>
     const DATA = {
       routes: [
-        { century: 10, label: 'Khorasan Foundations', story: 'Early mystic communities in Khorasan write inward discipline into daily life. Teaching circles spread through caravan routes.' },
-        { century: 12, label: 'Persian Poetic Bloom', story: 'Poetry becomes a transmission medium: metaphor carries spiritual technique farther than formal doctrine.' },
-        { century: 13, label: 'Anatolian Turning', story: 'After upheaval, Anatolia becomes a convergence zone; music, movement, and language blend in new brotherhoods.' },
-        { century: 16, label: 'Indian Ocean Threads', story: 'Orders connect East Africa, Arabia, South Asia; ports become classrooms and zikr houses.' },
-        { century: 19, label: 'Reform and Resilience', story: 'Colonial pressure triggers reform movements; local lodges become social support systems.' },
-        { century: 20, label: 'Global Diaspora', story: 'Migration carries lineages into Europe and North America, translating ritual into modern urban life.' }
+        { century: 10, label: 'Khorasan foundations', story: 'Early mystic communities in Khorasan write inward discipline into daily life. Teaching circles spread through caravan routes, invisible to empires but persistent as water.' },
+        { century: 11, label: 'The great synthesizers', story: 'Al-Ghazali reconciles orthodox theology with mystical experience. The inner life gains intellectual legitimacy; Sufism moves from margins to mainstream.' },
+        { century: 12, label: 'Persian poetic bloom', story: 'Poetry becomes a transmission medium: metaphor carries spiritual technique farther than formal doctrine. Attar maps the soul\'s journey through seven valleys.' },
+        { century: 13, label: 'Anatolian turning', story: 'After upheaval, Anatolia becomes a convergence zone. Music, movement, and language blend in new brotherhoods. Rumi turns grief into a spinning prayer.' },
+        { century: 14, label: 'Order and structure', story: 'The great tariqas formalize: Naqshbandi, Qadiri, Shadhili. Master-student chains stretch across continents. Lodges become libraries, hospitals, and hostels.' },
+        { century: 15, label: 'Hafiz and the wine of presence', story: 'In Shiraz, Hafiz perfects the ghazal — wine, the beloved, and the tavern all point inward. The court and the cloister drink from the same cup.' },
+        { century: 16, label: 'Indian Ocean threads', story: 'Orders connect East Africa, Arabia, South Asia. Ports become classrooms and dhikr houses. The ocean carries not cargo but consciousness.' },
+        { century: 17, label: 'The invisible universities', story: 'Sufi lodges function as shadow institutions — education, conflict resolution, trade networks. Power flows through relationships, not titles.' },
+        { century: 18, label: 'Renewal movements', story: 'Shah Waliullah in Delhi, al-Darqawi in Morocco — internal reform meets external pressure. The orders reinvent themselves without losing their root.' },
+        { century: 19, label: 'Reform and resilience', story: 'Colonial pressure triggers reform movements. Local lodges become social support systems, preserving community when formal structures are dismantled.' },
+        { century: 20, label: 'Global diaspora', story: 'Migration carries lineages into Europe and North America, translating ritual into modern urban life. The circle widens; the center holds.' }
       ],
       centers: [
-        { name: 'Nishapur', lat: 36.214, lng: 58.796, start: 10, end: 12, order: 'Malamati echoes', detail: 'Inner sincerity over public display.' },
-        { name: 'Balkh', lat: 36.756, lng: 66.897, start: 10, end: 13, order: 'Khorasan circles', detail: 'Rumi\'s cultural birthplace region.' },
-        { name: 'Konya', lat: 37.874, lng: 32.493, start: 13, end: 20, order: 'Mevlevi', detail: 'Whirling ceremony evolves as embodied remembrance.' },
-        { name: 'Delhi', lat: 28.6139, lng: 77.2090, start: 13, end: 20, order: 'Chishti', detail: 'Music (sama) and hospitality become core public practice.' },
-        { name: 'Fez', lat: 34.0181, lng: -5.0078, start: 12, end: 20, order: 'Shadhili / Tijani crossroads', detail: 'North African scholarship and contemplative ethics.' },
-        { name: 'Zanzibar', lat: -6.1659, lng: 39.2026, start: 16, end: 20, order: 'Qadiri coastal networks', detail: 'Swahili coast lodges integrate trade, law, and dhikr.' },
-        { name: 'Sarajevo', lat: 43.8563, lng: 18.4131, start: 16, end: 20, order: 'Balkan tekkes', detail: 'Bridge between Ottoman and European intellectual worlds.' }
+        { name: 'Nishapur', lat: 36.214, lng: 58.796, start: 10, end: 12, order: 'Malamati echoes', detail: 'Inner sincerity over public display — the path of self-blame.' },
+        { name: 'Balkh', lat: 36.756, lng: 66.897, start: 10, end: 13, order: 'Khorasan circles', detail: 'Cultural birthplace of Rumi. Where Central Asian winds carry whispered teachings.' },
+        { name: 'Baghdad', lat: 33.312, lng: 44.366, start: 10, end: 14, order: 'Qadiri heartland', detail: 'Abdul-Qadir Gilani\'s lodge becomes the model for all that follow.' },
+        { name: 'Konya', lat: 37.874, lng: 32.493, start: 13, end: 20, order: 'Mevlevi', detail: 'The whirling ceremony evolves — embodied remembrance, turning as prayer.' },
+        { name: 'Delhi', lat: 28.614, lng: 77.209, start: 13, end: 20, order: 'Chishti', detail: 'Music (sama) and hospitality become core practice. The door is always open.' },
+        { name: 'Fez', lat: 34.018, lng: -5.008, start: 12, end: 20, order: 'Shadhili & Tijani', detail: 'North African scholarship meets contemplative ethics. The scholar and the saint converge.' },
+        { name: 'Shiraz', lat: 29.592, lng: 52.584, start: 13, end: 16, order: 'The poets\' city', detail: 'Hafiz, Sa\'di — the language itself becomes a spiritual technology.' },
+        { name: 'Bukhara', lat: 39.775, lng: 64.419, start: 14, end: 18, order: 'Naqshbandi', detail: 'Silent dhikr, inner watchfulness. The breath as vehicle.' },
+        { name: 'Zanzibar', lat: -6.166, lng: 39.203, start: 16, end: 20, order: 'Qadiri coastal networks', detail: 'Swahili coast lodges integrate trade, law, and remembrance.' },
+        { name: 'Sarajevo', lat: 43.856, lng: 18.413, start: 16, end: 20, order: 'Balkan tekkes', detail: 'Bridge between Ottoman and European intellectual worlds.' },
+        { name: 'Istanbul', lat: 41.009, lng: 28.980, start: 15, end: 20, order: 'Imperial crossroads', detail: 'Every order represented. The city breathes with competing and complementing paths.' },
+        { name: 'Timbuktu', lat: 16.776, lng: -3.009, start: 14, end: 18, order: 'Saharan manuscripts', detail: 'Libraries of light in the desert. Knowledge preserved in the most unlikely place.' },
+        { name: 'Ajmer', lat: 26.453, lng: 74.639, start: 13, end: 20, order: 'Chishti shrine', detail: 'Muinuddin Chishti\'s dargah — where Hindu and Muslim hearts meet in shared devotion.' }
       ],
       quotes: [
-        { century: 10, text: 'Polish your heart until it reflects without distortion.', author: 'Khorasan maxim' },
-        { century: 12, text: 'The road is not in the sky; the road is in the heart.', author: 'Farid ud-Din Attar' },
-        { century: 13, text: 'Come, come, whoever you are.', author: 'Jalal al-Din Rumi' },
-        { century: 16, text: 'The sea receives all rivers and loses none of itself.', author: 'Indian Ocean lodge proverb' },
-        { century: 19, text: 'Service is remembrance in public form.', author: 'West African Sufi teacher' },
-        { century: 20, text: 'Al-hubb huwa al-jisr — الحب هو الجسر — Love is the bridge.', author: 'Contemporary Sufi saying' }
+        { century: 10, text: 'Polish your heart until it reflects without distortion.', author: 'Khorasan maxim', arabic: '' },
+        { century: 11, text: 'Knowledge without action is insanity, and action without knowledge is vanity.', author: 'Al-Ghazali', arabic: 'العلم بلا عمل جنون، والعمل بلا علم لا يكون' },
+        { century: 12, text: 'The road is not in the sky; the road is in the heart.', author: 'Farid ud-Din Attar', arabic: '' },
+        { century: 13, text: 'Come, come, whoever you are. Wanderer, worshiper, lover of leaving.', author: 'Jalal al-Din Rumi', arabic: 'بیا، بیا، هر آنچه هستی بیا' },
+        { century: 14, text: 'The seeker who enters the path should know that the path itself is the destination.', author: 'Naqshbandi teaching', arabic: '' },
+        { century: 15, text: 'I have learned so much from God that I can no longer call myself a Christian, a Hindu, a Muslim, a Buddhist, a Jew.', author: 'Hafiz of Shiraz', arabic: '' },
+        { century: 16, text: 'The sea receives all rivers and loses none of itself.', author: 'Indian Ocean lodge proverb', arabic: '' },
+        { century: 17, text: 'Whoever travels without a guide needs two hundred years for a two-day journey.', author: 'Rumi, recalled in lodges', arabic: '' },
+        { century: 18, text: 'The body is the house, the heart is the prayer niche, and the soul is the light within it.', author: 'Shah Waliullah', arabic: '' },
+        { century: 19, text: 'Service is remembrance in public form.', author: 'West African teaching line', arabic: '' },
+        { century: 20, text: 'Love is the bridge.', author: 'Contemporary Sufi saying', arabic: 'الحب هو الجسر' }
       ]
     };
 
-    const timeline = document.getElementById('timeline');
-    const eraLabel = document.getElementById('eraLabel');
-    const activeCenters = document.getElementById('activeCenters');
-    const routeLabel = document.getElementById('routeLabel');
-    const centuryStory = document.getElementById('centuryStory');
-    const quoteText = document.getElementById('quoteText');
-    const quoteMeta = document.getElementById('quoteMeta');
-    const centerList = document.getElementById('centerList');
-    const centuryDots = document.getElementById('centuryDots');
-    const soundBtn = document.getElementById('soundBtn');
-    const jumpBtn = document.getElementById('jumpBtn');
+    const $ = id => document.getElementById(id);
+    const timeline = $('timeline');
+    const eraLabel = $('eraLabel');
+    const activeCentersEl = $('activeCenters');
+    const routeLabel = $('routeLabel');
+    const centuryStory = $('centuryStory');
+    const quoteText = $('quoteText');
+    const quoteArabic = $('quoteArabic');
+    const quoteMeta = $('quoteMeta');
+    const centerList = $('centerList');
+    const centuryDots = $('centuryDots');
+    const soundBtn = $('soundBtn');
+    const jumpBtn = $('jumpBtn');
 
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const map = L.map('map', { zoomControl: false }).setView([28, 29], 3);
+
+    // Map — warm/antique tiles
+    const map = L.map('map', { zoomControl: false }).setView([30, 42], 3);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       subdomains: 'abcd',
       maxZoom: 19
     }).addTo(map);
 
     const markerLayer = L.layerGroup().addTo(map);
+    const routeLayer = L.layerGroup().addTo(map);
 
+    // Century dots
     for (let c = 10; c <= 20; c++) {
       const dot = document.createElement('span');
-      dot.className = 'century-dot';
+      dot.className = 'c-dot';
       centuryDots.appendChild(dot);
     }
 
+    // Audio — FIXED: proper toggle on/off
     let audioCtx = null;
-    let osc = null;
-    let gain = null;
-    let autoTimer = null;
     let soundEnabled = false;
+    let autoTimer = null;
 
-    const colorByCentury = (century) => {
-      const hue = 170 + ((century - 10) * 11);
-      return `hsl(${hue}, 70%, 55%)`;
-    };
+    function createPulse(century) {
+      if (!audioCtx || !soundEnabled) return;
+      const base = 110 + (century - 10) * 20;
+      const now = audioCtx.currentTime;
 
-    function initAudio() {
-      if (audioCtx) return;
-      try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        osc = audioCtx.createOscillator();
-        gain = audioCtx.createGain();
-        osc.type = 'sine';
-        gain.gain.value = 0;
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.start();
-      } catch (e) {
-        console.warn('Audio not supported');
-      }
-    }
+      // Main drone note
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.value = base;
+      gain1.gain.setValueAtTime(0, now);
+      gain1.gain.linearRampToValueAtTime(0.04, now + 0.15);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+      osc1.connect(gain1).connect(audioCtx.destination);
+      osc1.start(now);
+      osc1.stop(now + 1.3);
 
-    function sonicPulse(century) {
-      if (!soundEnabled || !audioCtx || prefersReduced) return;
-      try {
-        const base = 140 + (century - 10) * 28;
-        const now = audioCtx.currentTime;
-        osc.frequency.cancelScheduledValues(now);
-        osc.frequency.setTargetAtTime(base, now, 0.08);
-        gain.gain.cancelScheduledValues(now);
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.04, now + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-      } catch (e) {
-        console.warn('Audio pulse failed');
-      }
+      // Perfect fifth overtone
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.value = base * 1.5;
+      gain2.gain.setValueAtTime(0, now);
+      gain2.gain.linearRampToValueAtTime(0.015, now + 0.3);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+      osc2.connect(gain2).connect(audioCtx.destination);
+      osc2.start(now);
+      osc2.stop(now + 1.6);
     }
 
     function toggleSound() {
       if (!soundEnabled) {
-        initAudio();
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume();
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         soundEnabled = true;
-        soundBtn.classList.add('active');
-        soundBtn.querySelector('.sound-text').textContent = 'Sonic pulse ON';
-        sonicPulse(Number(timeline.value));
+        soundBtn.textContent = '☽ Pulse On';
+        soundBtn.classList.add('on');
+        soundBtn.setAttribute('aria-pressed', 'true');
+        createPulse(Number(timeline.value));
       } else {
         soundEnabled = false;
-        soundBtn.classList.remove('active');
-        soundBtn.querySelector('.sound-text').textContent = 'Enable sonic pulse';
-        if (gain && audioCtx) {
-          gain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
-        }
+        soundBtn.textContent = '☽ Sonic Pulse';
+        soundBtn.classList.remove('on');
+        soundBtn.setAttribute('aria-pressed', 'false');
       }
     }
 
-    function nearestRoute(century) {
-      return DATA.routes.reduce((best, route) => {
-        const d = Math.abs(route.century - century);
-        return d < Math.abs(best.century - century) ? route : best;
-      }, DATA.routes[0]);
-    }
+    // iOS-safe event binding
+    soundBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleSound(); });
+    soundBtn.addEventListener('touchend', function(e) { e.preventDefault(); e.stopPropagation(); toggleSound(); }, { passive: false });
 
-    function quoteFor(century) {
-      return DATA.quotes.reduce((best, q) => Math.abs(q.century - century) < Math.abs(best.century - century) ? q : best, DATA.quotes[0]);
-    }
-
-    function render(century) {
-      eraLabel.textContent = `${century}${century === 11 ? 'st' : century === 12 ? 'nd' : century === 13 ? 'rd' : 'th'} Century`;
-      const route = nearestRoute(century);
-      routeLabel.textContent = route.label;
-      centuryStory.textContent = route.story;
-
-      const quote = quoteFor(century);
-      quoteText.textContent = `"${quote.text}"`;
-      quoteMeta.textContent = quote.author;
-
-      markerLayer.clearLayers();
-      centerList.innerHTML = '';
-      const active = DATA.centers.filter(c => century >= c.start && century <= c.end);
-      activeCenters.textContent = String(active.length);
-
-      active.forEach(center => {
-        const color = colorByCentury(century);
-        const marker = L.circleMarker([center.lat, center.lng], {
-          radius: 8 + Math.max(0, century - center.start) * 0.5,
-          color: color,
-          fillColor: color,
-          fillOpacity: 0.75,
-          weight: 2
-        }).addTo(markerLayer);
-
-        marker.bindPopup(`<strong style="color: #d4a843; font-size: 14px;">${center.name}</strong><br/><span style="color: #40c4c4; font-size: 12px;">${center.order}</span><br/><span style="color: #94a3b8; font-size: 11px;">${center.detail}</span>`);
-
-        const li = document.createElement('li');
-        li.className = 'rounded-xl border border-[#d4a843]/30 bg-gradient-to-r from-[#0d2840]/80 to-[#0a0f1a]/80 p-4 hover:border-[#40c4c4]/50 transition-colors';
-        li.innerHTML = `<span class="font-semibold text-[#40c4c4]" style="text-shadow: 0 0 8px rgba(64,196,196,0.3);">${center.name}</span> · <span class="text-[#d4a843]">${center.order}</span><br><span class="text-slate-400 text-xs mt-1 block">${center.detail}</span>`;
-        centerList.appendChild(li);
-      });
-
-      const dots = [...centuryDots.children];
-      dots.forEach((dot, idx) => dot.classList.toggle('active', idx === century - 10));
-
-      if (active.length && !prefersReduced) {
-        const bounds = L.latLngBounds(active.map(c => [c.lat, c.lng]));
-        map.flyToBounds(bounds.pad(0.45), { duration: 0.8, easeLinearity: 0.25 });
-      }
-
-      sonicPulse(century);
-    }
-
-    timeline.addEventListener('input', (e) => render(Number(e.target.value)));
-    soundBtn.addEventListener('click', toggleSound);
-
-    jumpBtn.addEventListener('click', () => {
+    function toggleAutoWhirl() {
       if (autoTimer) {
         clearInterval(autoTimer);
         autoTimer = null;
-        jumpBtn.textContent = 'Auto-whirl through centuries';
-        jumpBtn.classList.remove('opacity-75');
+        jumpBtn.textContent = '۞ Auto-Whirl';
+        jumpBtn.classList.remove('on');
+        jumpBtn.setAttribute('aria-pressed', 'false');
         return;
       }
       let c = Number(timeline.value);
-      jumpBtn.textContent = 'Stop auto-whirl';
-      jumpBtn.classList.add('opacity-75');
+      jumpBtn.textContent = '۞ Stop';
+      jumpBtn.classList.add('on');
+      jumpBtn.setAttribute('aria-pressed', 'true');
       autoTimer = setInterval(() => {
         c = c >= 20 ? 10 : c + 1;
         timeline.value = c;
         render(c);
       }, prefersReduced ? 2000 : 1200);
-    });
+    }
 
+    jumpBtn.addEventListener('click', function(e) { e.stopPropagation(); toggleAutoWhirl(); });
+    jumpBtn.addEventListener('touchend', function(e) { e.preventDefault(); e.stopPropagation(); toggleAutoWhirl(); }, { passive: false });
+
+    // Color palette by century — warm progression
+    function colorForCentury(century) {
+      const t = (century - 10) / 10;
+      // Burgundy → Gold → Teal-green
+      if (t < 0.5) {
+        const r = Math.round(107 + (201 - 107) * (t * 2));
+        const g = Math.round(29 + (168 - 29) * (t * 2));
+        const b = Math.round(42 + (76 - 42) * (t * 2));
+        return `rgb(${r},${g},${b})`;
+      } else {
+        const r = Math.round(201 + (61 - 201) * ((t - 0.5) * 2));
+        const g = Math.round(168 + (139 - 168) * ((t - 0.5) * 2));
+        const b = Math.round(76 + (139 - 76) * ((t - 0.5) * 2));
+        return `rgb(${r},${g},${b})`;
+      }
+    }
+
+    function glowForCentury(century) {
+      const color = colorForCentury(century);
+      return color.replace('rgb', 'rgba').replace(')', ',0.35)');
+    }
+
+    function nearestRoute(century) {
+      return DATA.routes.find(r => r.century === century) || DATA.routes.reduce((best, r) =>
+        Math.abs(r.century - century) < Math.abs(best.century - century) ? r : best, DATA.routes[0]);
+    }
+
+    function quoteFor(century) {
+      return DATA.quotes.find(q => q.century === century) || DATA.quotes.reduce((best, q) =>
+        Math.abs(q.century - century) < Math.abs(best.century - century) ? q : best, DATA.quotes[0]);
+    }
+
+    function ordinal(n) {
+      const s = ['th','st','nd','rd'];
+      const v = n % 100;
+      return n + (s[(v-20)%10]||s[v]||s[0]);
+    }
+
+    function render(century) {
+      eraLabel.textContent = ordinal(century) + ' Century';
+
+      const route = nearestRoute(century);
+      routeLabel.textContent = route.label;
+      centuryStory.textContent = route.story;
+
+      const quote = quoteFor(century);
+      quoteText.textContent = '"' + quote.text + '"';
+      quoteMeta.textContent = '— ' + quote.author;
+      quoteArabic.textContent = quote.arabic || '';
+
+      // Map markers
+      markerLayer.clearLayers();
+      routeLayer.clearLayers();
+      centerList.innerHTML = '';
+      const active = DATA.centers.filter(c => century >= c.start && century <= c.end);
+      activeCentersEl.textContent = String(active.length);
+
+      const color = colorForCentury(century);
+      const glow = glowForCentury(century);
+
+      active.forEach((center, i) => {
+        const age = century - center.start;
+        const radius = 6 + age * 0.8;
+
+        // Outer glow
+        L.circleMarker([center.lat, center.lng], {
+          radius: radius + 8,
+          color: 'transparent',
+          fillColor: color,
+          fillOpacity: 0.08,
+          weight: 0
+        }).addTo(markerLayer);
+
+        // Main dot
+        const marker = L.circleMarker([center.lat, center.lng], {
+          radius: radius,
+          color: color,
+          fillColor: color,
+          fillOpacity: 0.6,
+          weight: 1.5
+        }).addTo(markerLayer);
+
+        marker.bindPopup(
+          '<div style="text-align:center;padding:4px 0;">' +
+          '<strong style="font-size:1.05em;">' + center.name + '</strong><br/>' +
+          '<span style="color:#c4837a;font-size:0.9em;">' + center.order + '</span><br/>' +
+          '<span style="color:#d4c4a8;font-size:0.85em;">' + center.detail + '</span>' +
+          '</div>'
+        );
+
+        const li = document.createElement('li');
+        li.className = 'center-item';
+        li.innerHTML = '<span class="center-name">' + center.name + '</span> · <span class="center-order">' + center.order + '</span>' +
+          '<div class="center-detail">' + center.detail + '</div>';
+        centerList.appendChild(li);
+      });
+
+      // Draw faint lines between active centers
+      routeLayer.clearLayers();
+      if (active.length > 1) {
+        const sorted = [...active].sort((a, b) => a.lng - b.lng);
+        for (let i = 0; i < sorted.length - 1; i++) {
+          L.polyline(
+            [[sorted[i].lat, sorted[i].lng], [sorted[i+1].lat, sorted[i+1].lng]],
+            { color: color, weight: 1, opacity: 0.15, dashArray: '6 8' }
+          ).addTo(routeLayer);
+        }
+      }
+
+      // Century dots
+      [...centuryDots.children].forEach((dot, idx) => dot.classList.toggle('active', idx === century - 10));
+
+      // Fly map
+      if (active.length && !prefersReduced) {
+        const bounds = L.latLngBounds(active.map(c => [c.lat, c.lng]));
+        map.flyToBounds(bounds.pad(0.5), { duration: 0.7, easeLinearity: 0.25 });
+      }
+
+      createPulse(century);
+    }
+
+    timeline.addEventListener('input', (e) => render(Number(e.target.value)));
     render(10);
   </script>
 </body>
